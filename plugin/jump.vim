@@ -1,6 +1,6 @@
 " jump.vim - Change your pwd with Autojump 
 " Maintainer: Patrick Oscity <patrick.oscity@gmail.com>
-" Version:    0.0.1
+" Version:    0.0.2
 
 if exists('g:loaded_autojump')
   finish
@@ -9,35 +9,12 @@ endif
 let g:loaded_autojump = 1
 
 if !exists("g:autojump_executable")
-  for candidate in [
-    \$HOME."/.autojump/etc/profile.d/autojump.sh",
-    \$HOME."/.autojump/share/autojump/autojump.sh",
-    \$HOME."/.nix-profile/etc/profile.d/autojump.sh",
-    \"/usr/share/autojump/autojump.sh",
-    \"/etc/profile.d/autojump.sh",
-    \"/etc/profile.d/autojump.sh",
-    \"/usr/local/share/autojump/autojump.sh",
-    \"/opt/local/etc/profile.d/autojump.sh",
-    \system("brew --prefix | tr -d '\r\n'")."/etc/autojump.sh",
-    \]
-    if filereadable(candidate)
-      let g:autojump_executable = candidate
-      break
-    endif
-  endfor
+  let g:autojump_executable = "autojump"
 endif
 
 if !exists("g:autojump_vim_command")
   let g:autojump_vim_command = 'cd'
 endif
-
-function! s:JumpGuard()
-  if !exists("g:autojump_executable")
-    echoerr 'autojump not found - please install it or set g:autojump_executable'
-    return 1
-  endif
-  return 0
-endfunction
 
 function! s:JumpVimCommand()
   return get(b:, 'autojump_vim_command', g:autojump_vim_command)
@@ -45,7 +22,7 @@ function! s:JumpVimCommand()
 endfunction
 
 function! s:JumpCommand(cmd, args)
-  return system("bash -c 'source " . g:autojump_executable . " && " . a:cmd . " " . a:args . " > /dev/null && pwd'")
+  return trim(system(a:cmd." ".a:args), "\r\n")
 endfunction
 
 function! s:JumpExtractArgs(rawArgs)
@@ -57,9 +34,6 @@ function! s:JumpExtractArgs(rawArgs)
 endfunction
 
 function! s:Jump(cmd, ...)
-  if s:JumpGuard()
-    return
-  endif
   let args = s:JumpExtractArgs(a:000)
   let path = s:JumpCommand(a:cmd, args)
   if v:shell_error != 0
@@ -68,9 +42,6 @@ function! s:Jump(cmd, ...)
 endfunction
 
 function! s:JumpCd(cmd, ...)
-  if s:JumpGuard()
-    return
-  endif
   let args = s:JumpExtractArgs(a:000)
   let path = s:JumpCommand(a:cmd, args)
   let l:cd = s:JumpVimCommand()

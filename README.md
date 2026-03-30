@@ -23,7 +23,7 @@ jump.vim defines the following commands:
 ### `:J`
 
 Equivalent to Autojump's `j` command – switch working directory. For example
-```:J dot``` should take you to your `~/.dotfiles` directory.
+`:J dot` should take you to your `~/.dotfiles` directory.
 
 ### `:Jc`
 
@@ -49,11 +49,7 @@ know about the new directory.
 
 ## Configuration
 
-jump.vim tries to auto-detect the location of your Autojump installation. In
-case the detection fails, you will see the following error message when trying
-to use one of jump.vim's commands:
-
-    autojump not found - please install it or set g:autojump_executable
+Unlike previous behaviour, possible autojump paths are not probed. Instead a `:checkhealth` interface is provided which can be used by the user on will.
 
 If you installed Autojump in a non-standard location, you can set the path to
 the autojump script manually:
